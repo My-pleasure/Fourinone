@@ -1,6 +1,6 @@
 package main
 
-import "class/MigrantWorker"
+import "Fourinone/class/MigrantWorker"
 
 func main() {
 	var wks MigrantWorker.Workers
