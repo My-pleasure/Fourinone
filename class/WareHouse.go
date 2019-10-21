@@ -1,4 +1,3 @@
 package class
 
-type WareHouse interface {
-}
+type WareHouse interface{}

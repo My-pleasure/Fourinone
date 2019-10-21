@@ -6,7 +6,16 @@ import (
 	"os"
 )
 
+//农民工
 type Workers struct {
+}
+
+//RPC服务
+type WorkRPC struct {
+}
+
+func (workRPC WorkRPC) DoTask(a int, ret *WareHouse) error {
+	return nil
 }
 
 //向职介者注册
@@ -30,32 +39,58 @@ func logInToPark(ip string, port string) {
 		return
 	}
 	if string(buf[:n]) == "ok" {
-		fmt.Println("注册成功，等待打黑工中。。。")
+		fmt.Println("log in successfully , waiting work .....")
 	}
 }
 
 //开启RPC服务
-func startRPC() {
+/*func startRPC(ip string,port string) {
+	//注册RPC服务
+	workRPC:=new(WorkRPC)
+	rpc.Register(workRPC)
 
-}
+	//创建监听端口
+	tcpAddr,err:=net.ResolveTCPAddr("tcp",ip+":"+port)
+	if err!=nil{
+		fmt.Println("startRPC net.ResolveTCPAddr err:",err)
+		return
+	}
+	listener,err:=net.ListenTCP("tcp",tcpAddr)
+	if err!=nil{
+		fmt.Println("startRPC net.ListenTCP err:",err)
+		return
+	}
+	defer listener.Close()
+
+	//循环监听服务
+	for{
+		conn,err:=listener.Accept()
+		if err!=nil{
+			fmt.Println("startRPC listener.Accept err:",err)
+			continue
+		}
+		go rpc.ServeConn(conn)
+	}
+}*/
 
 //农民工启动
 func (workers Workers) StartWork() {
 	//获取命令行参数
 	list := os.Args
 	if len(list) != 3 {
-		fmt.Println("我的天呐！大兄弟，你的格式错误了(⊙ˍ⊙)")
-		fmt.Println("正确格式为：go run xxx.go IP Port")
+		fmt.Println("Oh! Baby, your form is wrong! (⊙ˍ⊙)")
+		fmt.Println("Please input your hostIP and running Port!")
+		fmt.Println("The right form is ：go run xxx.go IP Port")
 		return
 	}
 	ip := list[1]
 	port := list[2]
 
+	//开启RPC服务
+	//go startRPC(ip,port)
+
 	//向职介者注册
 	go logInToPark(ip, port)
-
-	//开启RPC服务
-	go startRPC()
 
 	//农民工头发-1-1-1...
 	for {

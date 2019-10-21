@@ -7,15 +7,15 @@ import (
 )
 
 //农民工注册信息
-type waitingWorkers struct {
+type WaitingWorkers struct {
 	//workerIP   string
 	//workerPort string
 	//Ready      bool
-	workAddr string
+	WorkAddr string
 }
 
 //民工注册信息	value为1,可打黑工;value为-1,在别的包工头下打黑工;value为0,当前任务完成
-var m map[waitingWorkers]int
+var m map[WaitingWorkers]int
 
 //职介者信息
 type Park struct {
@@ -26,15 +26,17 @@ type Service struct{}
 
 //RPC for Contractor
 func (s *Service) QueryAllWorkers(a int, ret *WareHouse) error {
-	var str string
+	str := ""
+	answer := ""
 	for key, value := range m {
 		if value == 1 {
 			str = "Ready"
 		} else {
 			str = "Not Ready"
 		}
-		*ret = key.workAddr + " " + str
+		answer += key.WorkAddr + " " + str + "\n"
 	}
+	*ret = answer
 	return nil
 }
 
@@ -44,19 +46,19 @@ func HandleLogInConn(conn net.Conn) {
 
 	//获取农民工的地址
 	addr := conn.RemoteAddr()
-	fmt.Println("农民工 ", addr, " 连接成功(p≧w≦q)")
+	fmt.Println("MigrantWorker ", addr, " connect successfully!(p≧w≦q)")
 
 	//ParkServer接收注册信息
-	var wks waitingWorkers
+	var wks WaitingWorkers
 	buf := make([]byte, 1024)
 	n, err := conn.Read(buf)
 	if err != nil {
 		fmt.Println("HandleConn conn.Read err:", err)
 		return
 	}
-	wks.workAddr = string(buf[:n])
+	wks.WorkAddr = string(buf[:n])
 	m[wks] = 1
-	fmt.Println("成功收到来自农民工 ", addr, " 的注册信息：", string(buf[:n]))
+	fmt.Println("success to get the ", addr, "'s log message ：", string(buf[:n]))
 
 	//回写表示接收成功
 	conn.Write([]byte("ok"))
@@ -91,8 +93,12 @@ func waitingWorkerServer() {
 	rpc.Register(s)
 
 	//创建监听端口
-	tcpaddr, err := net.ResolveTCPAddr("tcp", "127.0.0.1:8001")
-	listener, err := net.ListenTCP("tcp", tcpaddr)
+	tcpAddr, err := net.ResolveTCPAddr("tcp", "127.0.0.1:8001")
+	if err != nil {
+		fmt.Println("waitingWorkerServer net.ResolveTCPAddr err:", err)
+		return
+	}
+	listener, err := net.ListenTCP("tcp", tcpAddr)
 	if err != nil {
 		fmt.Println("waitingWorkerServer net.Listen err:", err)
 		return
@@ -112,7 +118,7 @@ func waitingWorkerServer() {
 
 //启动ParkServer
 func (park Park) ParkStart() {
-	m = make(map[waitingWorkers]int)
+	m = make(map[WaitingWorkers]int)
 
 	//启动监听农民工注册服务
 	go logInServer()

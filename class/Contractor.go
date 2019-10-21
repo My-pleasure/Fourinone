@@ -23,9 +23,7 @@ func (contractor Contractor) QueryAllWorkers() {
 		fmt.Println("QueryAllWorkers conn.Call err:", err)
 		return
 	}
+
+	//显示返回的结果
 	fmt.Println(ret)
-
-	for {
-
-	}
 }
