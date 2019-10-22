@@ -1,2 +1,5 @@
 # Fourinone
-基于Fourinone2.0协议，类Fourinone的分布式框架
+A distributed system, based on Fourinone 2.0
+
+## Schedule
+- Simply finish the distributed communication
